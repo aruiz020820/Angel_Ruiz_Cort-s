@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cambio</title>
+</head>
+<body>
+    <h1>CONVERSION DE DIVISAS </h1>
+    <form id="frmConversion">
+        <label>CONVIERTA LA MONEDA QUE USTED DESEA</label><br/>
+        De:
+        <select id="selFromCurrency">
+            
+        </select>
+        <input type="number" id="inpImporte" placeholder="Importe"/>
+        A:
+        <select id="selToCurrency">
+            
+        </select>
+        <input type="number" id="inpResult" placeholder="Resultado" readonly/>
+        <button type="button" onclick="convertir()">Convertir</button>
+    </form>
+    <script>
+        const host = 'api.frankfurter.app';
+
+        
+        fetch(`https://${host}/currencies`)
+        .then(resp => resp.json())
+        .then(data => {
+            const selFromCurrency = document.getElementById('selFromCurrency');
+            const selToCurrency = document.getElementById('selToCurrency');
+            
+            for (const currencyCode in data) {
+                const option = document.createElement('option');
+                option.value = currencyCode;
+                option.textContent = `${data[currencyCode]} [${currencyCode}]`;
+                selFromCurrency.appendChild(option);
+                selToCurrency.appendChild(option.cloneNode(true));
+            }
+        });
+
+        function convertir() {
+            let importe = document.querySelector("#inpImporte").value;
+            let fromCurrency = document.querySelector("#selFromCurrency").value;
+            let toCurrency = document.querySelector("#selToCurrency").value;
+
+            fetch(`https://${host}/latest?amount=${importe}&from=${fromCurrency}&to=${toCurrency}`)
+            .then(resp => resp.json())
+            .then((data) => {
+                let inpResultado = document.querySelector("#inpResult");
+                inpResultado.value = data.rates[toCurrency];
+                console.log(data);
+            });
+        }
+    </script>
+</body>
+</html>
