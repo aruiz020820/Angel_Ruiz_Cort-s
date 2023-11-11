@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Listado de empleados por mes de cumpleaños</title>
+  <script>
+    function obtenerCumpleaneros() {
+      // Obtener el valor del mes seleccionado
+      var mesSeleccionado = document.getElementById('mes').value;
+
+      // Construir la URL de la API con el mes seleccionado
+      var apiUrl = "http://192.168.56.108/api/resource/Employee";
+      apiUrl += "?fields=['employee_name','date_of_birth']";
+      apiUrl += "&filters=[['Employee','date_of_birth','like','%-" + mesSeleccionado + "-%']]";
+
+      // Realizar la solicitud a la API
+      fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => mostrarResultados(data))
+        .catch(error => console.error('Error al obtener los datos:', error));
+    }
+
+    function mostrarResultados(data) {
+      // Obtener el elemento de la lista donde se mostrarán los resultados
+      var listaEmpleados = document.getElementById('listaEmpleados');
+
+      // Limpiar la lista antes de agregar nuevos elementos
+      listaEmpleados.innerHTML = '';
+
+      // Mostrar cada empleado en la lista
+      data.data.forEach(function(empleado) {
+        var listItem = document.createElement('li');
+        listItem.textContent = empleado.employee_name + ' - Fecha de nacimiento: ' + empleado.date_of_birth;
+        listaEmpleados.appendChild(listItem);
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>Listado de empleados por mes de cumpleaños</h1>
+  
+  <label for="mes">Selecciona el mes:</label>
+  <select id="mes">
+    <option value="01">Enero</option>
+    <option value="02">Febrero</option>
+    <option value="03">Marzo</option>
+    <option value="04">Abril</option>
+    <option value="05">Mayo</option>
+    <option value="06">Junio</option>
+    <option value="07">Julio</option>
+    <option value="08">Agosto</option>
+    <option value="09">Septiembre</option>
+    <option value="10">Octubre</option>
+    <option value="11">Noviembre</option>
+    <option value="12">Diciembre</option>
+  </select>
+
+  <button onclick="obtenerCumpleaneros()">Buscar</button>
+
+  <h2>Empleados que cumplen años en el mes seleccionado:</h2>
+  <ul id="listaEmpleados">
+    <!-- Aquí se mostrará la lista de empleados -->
+  </ul>
+</body>
+</html>
